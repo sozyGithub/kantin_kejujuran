@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
+}
+
+datasource db {
+  provider             = "mysql"
+  url                  = env("DATABASE_URL")
+  referentialIntegrity = "prisma"
+}
+
+model Canteen {
+  id        String    @id @unique @default(cuid())
+  createdAt DateTime? @default(now())
+  balance   Int?
+  updatedAt DateTime? @updatedAt
+  Student   Student[]
+  Product   Product[]
+}
+
+model Student {
+  id         String    @id @unique @default(cuid())
+  createdAt  DateTime?
+  student_id String?   @unique
+  password   String?
+  name       String?
+  balance    Int?
+  canteen    Canteen?  @relation(fields: [canteenId], references: [id])
+  canteenId  String?
+  Product    Product[]
+  Cart       Cart[]
+}
+
+model Product {
+  id          String     @id @unique @default(cuid())
+  createdAt   DateTime?  @default(now())
+  name        String?
+  description String?
+  image       String?
+  quantity    Int?
+  price       Int?
+  canteen     Canteen?   @relation(fields: [canteenId], references: [id])
+  student     Student?   @relation(fields: [studentId], references: [id])
+  canteenId   String?
+  studentId   String?
+  CartItem    CartItem[]
+}
+
+model Cart {
+  id        String     @id @unique @default(cuid())
+  createdAt DateTime?  @default(now())
+  student   Student?   @relation(fields: [studentId], references: [id])
+  cart_item CartItem[]
+  studentId String?
+}
+
+model CartItem {
+  id        String    @id @unique @default(cuid())
+  createdAt DateTime? @default(now())
+  quantity  Int?
+  product   Product?  @relation(fields: [productId], references: [id])
+  cart      Cart?     @relation(fields: [cartId], references: [id])
+  productId String?
+  cartId    String?
+}
