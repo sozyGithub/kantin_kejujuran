@@ -169,5 +169,6 @@ export async function getStaticProps({ params }: GetStaticPropsContext) {
 
   return {
     props: { products },
+    revalidate: 1,
   };
 }
