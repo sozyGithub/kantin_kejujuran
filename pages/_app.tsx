@@ -25,6 +25,7 @@ export default function App(props: AppProps) {
           theme={{
             /** Put your mantine theme override here */
             colorScheme: "light",
+            loader: "bars",
           }}
         >
           <NotificationsProvider position="top-center" zIndex={2077} limit={2}>

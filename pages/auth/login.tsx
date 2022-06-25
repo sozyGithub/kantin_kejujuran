@@ -2,7 +2,6 @@ import {
   Paper,
   Avatar,
   Button,
-  NumberInput,
   PasswordInput,
   Divider,
   TextInput,
@@ -10,10 +9,9 @@ import {
 import { useForm, zodResolver } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { NextPage } from "next";
-import { getSession, signIn } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from "react";
 import { Home, X } from "tabler-icons-react";
 import { z } from "zod";
 
@@ -50,8 +48,8 @@ const Login: NextPage = () => {
       return;
     }
 
-    // redirect to the home page if success
-    router.push("/");
+    // redirect to the student dashboard page if success
+    router.push(`/student/${values.student_id}`);
   };
 
   return (
