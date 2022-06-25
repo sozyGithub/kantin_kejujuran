@@ -8,7 +8,7 @@ import {
   LoadingOverlay,
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
-import { GetStaticPropsContext, NextPage } from "next";
+import { GetServerSidePropsContext, NextPage } from "next";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -74,17 +74,20 @@ const StudentProduct: NextPage = (props: any) => {
       <SidebarStudentDashboard student_id={session?.user?.student_id}>
         <div className="max-w-4xl mx-auto">
           {value.saving && <LoadingOverlay visible={true} />}
+          <p className="font-semibold text-gray-600 text-xl">Produk Saya</p>
+          <Divider my="sm" />
           <Grid>
-            {props.products.map((product: any) => (
-              <Grid.Col md={4} lg={3}>
+            {props.products.map((product: any, i: number) => (
+              <Grid.Col md={4} lg={3} key={i}>
                 <Card shadow="sm">
                   <Card.Section>
-                    <Image src={product.image} withPlaceholder height={180} />
+                    <Image src={product.image} height={180} />
                   </Card.Section>
                   <div className="overflow-hidden h-24 py-2">
-                    <p className="text-gray-600 font-semibold text-lg">
+                    <p className="text-gray-600 font-semibold text-lg leading-tight">
                       {product.name}
                     </p>
+                    <p className="text-xs text-gray-500">{product.createdAt}</p>
                     <p className="text-sm text-clip">{product.description}</p>
                   </div>
                   <Divider my="sm" />
@@ -135,25 +138,13 @@ const StudentProduct: NextPage = (props: any) => {
 
 export default StudentProduct;
 
-export async function getStaticPaths() {
-  const students = await prisma.student.findMany({
-    select: {
-      student_id: true,
+export async function getServerSideProps(ctx: GetServerSidePropsContext) {
+  const student = await prisma.student.findUnique({
+    where: {
+      student_id: ctx.query.id as string,
     },
   });
-
-  const paths = students.map((student) => ({
-    params: { id: student.student_id },
-  }));
-
-  return {
-    paths,
-    fallback: false,
-  };
-}
-
-export async function getStaticProps({ params }: GetStaticPropsContext) {
-  const products = await prisma.product.findMany({
+  const products: any = await prisma.product.findMany({
     select: {
       name: true,
       description: true,
@@ -161,14 +152,28 @@ export async function getStaticProps({ params }: GetStaticPropsContext) {
       quantity: true,
       price: true,
       id: true,
+      createdAt: true,
     },
     where: {
-      studentId: params?.student_id as string,
+      studentId: ctx.query.student_id as string,
     },
+  });
+
+  if (!student) {
+    return {
+      notFound: true,
+    };
+  }
+
+  products.map((product: any) => {
+    product.createdAt = product.createdAt?.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
   });
 
   return {
     props: { products },
-    revalidate: 1,
   };
 }

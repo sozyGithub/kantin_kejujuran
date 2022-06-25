@@ -43,18 +43,6 @@ export default function SidebarStudentDashboard(props: any) {
         >
           <Navbar.Section grow component={ScrollArea}>
             <div className="space-y-4">
-              <div className="pb-2">
-                <NavLink
-                  href={`/student/${session?.user?.student_id}`}
-                  exact
-                  className="flex flex-row space-x-2 p-2 hover:bg-sky-100 rounded-md cursor-pointer"
-                >
-                  <ThemeIcon variant="light">
-                    <Home />
-                  </ThemeIcon>
-                  <p className="flex-1 font-semibold">Beranda</p>
-                </NavLink>
-              </div>
               <div className="space-y-2">
                 <p className="uppercase text-xs text-gray-500 font-semibold">
                   Produk
@@ -86,7 +74,8 @@ export default function SidebarStudentDashboard(props: any) {
             <div className="py-2">
               <NavLink
                 className="p-1 flex flex-row space-x-2 items-center hover:cursor-pointer hover:bg-sky-100"
-                href={`/student/${session?.user?.student_id}/profile`}
+                href={`/student/${session?.user?.student_id}`}
+                exact
               >
                 <div>
                   <Avatar color="sky" radius="xl" />

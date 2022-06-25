@@ -9,7 +9,12 @@ import {
   TextInput,
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
-import { GetStaticPropsContext, NextPage } from "next";
+import {
+  GetServerSidePropsContext,
+  GetServerSidePropsResult,
+  GetStaticPropsContext,
+  NextPage,
+} from "next";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -126,7 +131,6 @@ const ProductUpdate: NextPage = (props: any) => {
                         height={200}
                         fit="contain"
                         caption="Pratinjau Gambar"
-                        withPlaceholder
                       />
                       <Button
                         variant="light"
@@ -178,7 +182,6 @@ const ProductUpdate: NextPage = (props: any) => {
                     {value.imageLink && (
                       <Image
                         src={value.imageLink}
-                        withPlaceholder
                         fit="contain"
                         height={200}
                         caption="Pratinjau Gambar"
@@ -250,35 +253,27 @@ const ProductUpdate: NextPage = (props: any) => {
 
 export default ProductUpdate;
 
-export async function getStaticPaths() {
-  const students = await prisma.student.findMany({
-    select: {
-      student_id: true,
-      Product: true,
+export async function getServerSideProps(ctx: GetServerSidePropsContext) {
+  const student = await prisma.student.findMany({
+    where: {
+      student_id: ctx.query.id as string,
+      Product: {
+        some: {
+          id: ctx.query.productid as string,
+        },
+      },
     },
   });
-  let paths: any = [];
-  students.map((student) => {
-    student.Product.map((product) => {
-      paths.push({
-        params: {
-          id: student.student_id,
-          productid: product.id,
-        },
-      });
-    });
-  });
 
-  return {
-    paths: paths,
-    fallback: false,
-  };
-}
+  if (student.length === 0) {
+    return {
+      notFound: true,
+    };
+  }
 
-export async function getStaticProps({ params }: GetStaticPropsContext) {
   const product = await prisma.product.findUnique({
     where: {
-      id: params?.productid as string,
+      id: ctx.query.productid as string,
     },
     select: {
       id: true,
