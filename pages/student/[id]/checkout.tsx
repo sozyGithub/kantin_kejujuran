@@ -391,7 +391,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   let cartItemQuantity: number = 0;
   let cartPerItemQuantity: any = {};
   let totalShopping: any = 0;
-  cart[0].cart_item.map((item) => {
+  cart[0].cart_item.map((item: any) => {
     cartPerItemQuantity[item.product.id] = item.quantity;
     cartItemQuantity += item.quantity as number;
     totalShopping += ((item.quantity as number) *
