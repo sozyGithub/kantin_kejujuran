@@ -7,8 +7,8 @@ const Navbar = (props: any) => {
   const { data: session }: any = useSession();
   return (
     <>
-      <div className="hidden lg:block sticky top-0 z-50 p-4 border-b border-gray-300 w-full bg-white/70 backdrop-blur shadow-sm">
-        <div className="lg:flex flex-row justify-between items-center max-w-6xl w-full mx-auto">
+      <div className="block sticky top-0 z-50 p-4 border-b border-gray-300 w-full bg-white/70 backdrop-blur shadow-sm">
+        <div className="lg:flex-row flex space-y-2 lg:space-y-0 flex-col justify-center lg:justify-between items-center max-w-6xl w-full mx-auto">
           <div>
             {!session ? (
               <Link href="/auth/login">
