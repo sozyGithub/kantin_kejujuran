@@ -40,7 +40,10 @@ const Home: NextPage = (props: any) => {
     let isCartItemExist = false;
     let cartItemID;
     product.CartItem.map((item: any) => {
-      if (item.productId === product.id) {
+      if (
+        item.productId === product.id &&
+        session?.user?.cart === item.cartId
+      ) {
         isCartItemExist = true;
         cartItemID = item.id;
         return;
@@ -81,7 +84,10 @@ const Home: NextPage = (props: any) => {
     let isCartItemExist = false;
     let cartItemID;
     product.CartItem.map((item: any) => {
-      if (item.productId === product.id) {
+      if (
+        item.productId === product.id &&
+        session?.user?.cart === item.cartId
+      ) {
         isCartItemExist = true;
         cartItemID = item.id;
         return;
@@ -242,6 +248,7 @@ export async function getServerSideProps({ req }: GetServerSidePropsContext) {
           select: {
             productId: true,
             quantity: true,
+            cartId: true,
             id: true,
           },
         },
