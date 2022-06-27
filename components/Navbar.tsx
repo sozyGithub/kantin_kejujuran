@@ -1,9 +1,9 @@
-import { Avatar, Button } from "@mantine/core";
+import { Avatar, Badge, Button } from "@mantine/core";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { Login, ShoppingCart } from "tabler-icons-react";
 
-const Navbar = () => {
+const Navbar = (props: any) => {
   const { data: session }: any = useSession();
   return (
     <>
@@ -32,8 +32,19 @@ const Navbar = () => {
           <Link href="/">
             <a className="font-bold text-xl text-gray-600">Kantin Kejujuran</a>
           </Link>
-          <div>
-            <ShoppingCart />
+          <div className="flex flex-row items-center">
+            <Link
+              href={
+                session
+                  ? `/student/${session?.user?.student_id}/cart`
+                  : `/auth/login`
+              }
+            >
+              <ShoppingCart className="cursor-pointer" />
+            </Link>
+            {props.quantity > 0 && (
+              <Badge variant="light">{props.quantity}</Badge>
+            )}
           </div>
         </div>
       </div>

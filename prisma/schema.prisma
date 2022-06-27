@@ -22,31 +22,34 @@ model Canteen {
 }
 
 model Student {
-  id         String    @id @unique @default(cuid())
-  createdAt  DateTime?
-  student_id String?   @unique
-  password   String?
-  name       String?
-  balance    Int?
-  canteen    Canteen?  @relation(fields: [canteenId], references: [id])
-  canteenId  String?
-  Product    Product[]
-  Cart       Cart[]
+  id            String          @id @unique @default(cuid())
+  createdAt     DateTime?
+  student_id    String?         @unique
+  password      String?
+  name          String?
+  balance       Int?
+  canteen       Canteen?        @relation(fields: [canteenId], references: [id])
+  canteenId     String?
+  Product       Product[]
+  Cart          Cart[]
+  BoughtProduct BoughtProduct[]
 }
 
 model Product {
-  id          String     @id @unique @default(cuid())
-  createdAt   DateTime?  @default(now())
-  name        String?
-  description String?
-  image       String?
-  quantity    Int?
-  price       Int?
-  canteen     Canteen?   @relation(fields: [canteenId], references: [id])
-  student     Student?   @relation(fields: [studentId], references: [id])
-  canteenId   String?
-  studentId   String?
-  CartItem    CartItem[]
+  id            String          @id @unique @default(cuid())
+  createdAt     DateTime?       @default(now())
+  name          String?
+  description   String?
+  image         String?
+  quantity      Int?
+  price         Int?
+  canteen       Canteen?        @relation(fields: [canteenId], references: [id])
+  student       Student?        @relation(fields: [studentId], references: [id])
+  canteenId     String?
+  studentId     String?
+  CartItem      CartItem[]
+  BoughtProduct BoughtProduct[]
+  SoldProduct   SoldProduct[]
 }
 
 model Cart {
@@ -65,4 +68,22 @@ model CartItem {
   cart      Cart?     @relation(fields: [cartId], references: [id])
   productId String?
   cartId    String?
+}
+
+model BoughtProduct {
+  id        String    @id @unique @default(cuid())
+  student   Student?  @relation(fields: [studentId], references: [id])
+  buyTime   DateTime?
+  quantity  Int?
+  product   Product?  @relation(fields: [productId], references: [id])
+  studentId String?
+  productId String?
+}
+
+model SoldProduct {
+  id        String    @id @unique @default(cuid())
+  product   Product?  @relation(fields: [productId], references: [id])
+  soldTime  DateTime?
+  quantity  Int?
+  productId String?
 }

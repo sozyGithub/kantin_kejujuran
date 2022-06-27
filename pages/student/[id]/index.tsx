@@ -7,6 +7,15 @@ import { prisma } from "../../../lib/prisma";
 
 const StudentDashboard: NextPage = (props: any) => {
   const { data: session }: any = useSession();
+  const handleFormatPrice = (price: string) => {
+    let segmentPrice = price
+      .split("")
+      .reverse()
+      .join("")
+      .match(/.{1,3}/g)
+      ?.join(".");
+    return segmentPrice?.split("").reverse().join("");
+  };
   return (
     <>
       <div>
@@ -21,18 +30,25 @@ const StudentDashboard: NextPage = (props: any) => {
               <Avatar radius="xl" size="xl" />
             </div>
             <div className="space-y-2">
-              <p className="font-bold">
-                <span className="font-semibold text-gray-600">ID Siswa:</span>{" "}
-                {session?.user?.student_id}
-              </p>
-              <p className="font-bold">
-                <span className="font-semibold text-gray-600">Nama:</span>{" "}
-                {session?.user?.name}
-              </p>
               <div className="flex flex-row space-x-2 items-center">
-                <p className="font-semibold text-gray-600">Saldo:</p>
+                <p className="font-semibold text-gray-600 w-20">ID Siswa:</p>
                 <Paper className="flex-1 border border-gray-300" p="xs">
-                  <p className="font-bold"> Rp{props.student.balance}</p>
+                  <p className="font-bold"> {session?.user?.student_id}</p>
+                </Paper>
+              </div>
+              <div className="flex flex-row space-x-2 items-center">
+                <p className="font-semibold text-gray-600 w-20">Nama:</p>
+                <Paper className="flex-1 border border-gray-300" p="xs">
+                  <p className="font-bold"> {session?.user?.name}</p>
+                </Paper>
+              </div>
+              <div className="flex flex-row space-x-2 items-center">
+                <p className="font-semibold text-gray-600 w-20">Saldo:</p>
+                <Paper className="flex-1 border border-gray-300" p="xs">
+                  <p className="font-bold">
+                    {" "}
+                    Rp{handleFormatPrice(String(props.student.balance))}
+                  </p>
                 </Paper>
               </div>
               <div className="flex flex-row justify-center space-x-2">

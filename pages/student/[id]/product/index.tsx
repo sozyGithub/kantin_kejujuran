@@ -29,7 +29,7 @@ const StudentProduct: NextPage = (props: any) => {
       .reverse()
       .join("")
       .match(/.{1,3}/g)
-      ?.join(",");
+      ?.join(".");
     return segmentPrice?.split("").reverse().join("");
   };
   const handleDeleteProduct = async (id: string) => {
@@ -155,7 +155,9 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       createdAt: true,
     },
     where: {
-      studentId: ctx.query.student_id as string,
+      student: {
+        student_id: ctx.query.id as string,
+      },
     },
   });
 

@@ -54,6 +54,7 @@ const ProductUpdate: NextPage = (props: any) => {
       description: value.description,
       price: value.price,
       quantity: value.quantity,
+      update: "all",
     };
 
     try {

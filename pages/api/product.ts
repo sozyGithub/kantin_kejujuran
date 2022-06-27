@@ -43,7 +43,7 @@ export default async function handler(
     } catch (error) {
       res.status(400).json({ error: "Produk gagal dihapus." });
     }
-  } else if (req.method === "PUT" && session) {
+  } else if (req.method === "PUT" && session && req.body.update === "all") {
     const { id, name, image, description, price, quantity } = req.body;
     try {
       await prisma.product.update({
@@ -60,6 +60,28 @@ export default async function handler(
       });
       res.status(200).json({ success: "Produk berhasil diperbarui." });
     } catch (error) {
+      res.status(400).json({ error: "Produk gagal diperbarui." });
+    }
+  } else if (
+    req.method === "PUT" &&
+    session &&
+    req.body.update === "quantity"
+  ) {
+    try {
+      await prisma.$transaction(
+        req.body.data.map((product: any) =>
+          prisma.product.update({
+            where: {
+              id: product.id,
+            },
+            data: {
+              quantity: product.quantity,
+            },
+          })
+        )
+      );
+      res.status(200).json({ success: "Produk berhasil diperbarui." });
+    } catch {
       res.status(400).json({ error: "Produk gagal diperbarui." });
     }
   } else {

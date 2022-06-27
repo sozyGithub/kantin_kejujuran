@@ -19,6 +19,11 @@ export default NextAuth({
             name: true,
             student_id: true,
             password: true,
+            Cart: {
+              select: {
+                id: true,
+              },
+            },
           },
         });
 
@@ -27,6 +32,8 @@ export default NextAuth({
           value: false,
           student_id: "",
           name: "",
+          cart: "",
+          canteen_id: process.env.CANTEEN_ID,
         };
 
         // checking with data from db
@@ -35,9 +42,10 @@ export default NextAuth({
             credentials?.student_id === student.student_id &&
             bcrpyt.compareSync(credentials?.password, student.password!)
           ) {
-            (isFound.value = true),
-              (isFound.student_id = student.student_id),
-              (isFound.name = student.name!);
+            isFound.value = true;
+            isFound.student_id = student.student_id;
+            isFound.name = student.name!;
+            isFound.cart = student.Cart[0].id;
           }
         });
 
@@ -45,6 +53,8 @@ export default NextAuth({
           return {
             student_id: isFound.student_id,
             name: isFound.name,
+            cart: isFound.cart,
+            canteen_id: isFound.canteen_id,
           };
         }
 
@@ -58,6 +68,8 @@ export default NextAuth({
       if (user) {
         token.student_id = user.student_id;
         token.name = user.name;
+        token.cart = user.cart;
+        token.canteen_id = user.canteen_id;
       }
       return token;
     },
@@ -65,6 +77,8 @@ export default NextAuth({
       if (token) {
         session.user.student_id = token.student_id;
         session.user.name = token.name;
+        session.user.cart = token.cart;
+        session.user.canteen_id = token.canteen_id;
       }
       return session;
     },
