@@ -299,7 +299,7 @@ const StudentCart: NextPage = (props: any) => {
                 className="flex-1"
                 min={0}
                 placeholder={`${props.totalShopping.split(".").join("")}`}
-                max={props.studentBalance}
+                max={+props.totalShopping.split(".").join("")}
                 disabled={
                   props.studentBalance >=
                   +props.totalShopping.split(".").join("")
@@ -380,6 +380,12 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       },
     },
   });
+
+  if (cart[0].cart_item.length === 0) {
+    return {
+      notFound: true,
+    };
+  }
 
   const allCartItem = await prisma.cartItem.findMany({
     select: {

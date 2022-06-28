@@ -47,6 +47,28 @@ export default async function handler(
     } catch {
       res.status(400).json({ error: "Saldo siswa gagal diperbarui." });
     }
+  } else if (
+    req.method === "PUT" &&
+    session &&
+    req.body.update === "balance_income"
+  ) {
+    const { balance, student_id, income } = req.body;
+    try {
+      await prisma.student.update({
+        where: {
+          student_id,
+        },
+        data: {
+          balance,
+          income,
+        },
+      });
+      res
+        .status(200)
+        .json({ success: "Pendapatan sukses dipindahkan ke saldo Anda." });
+    } catch {
+      res.status(400).json({ error: "Gagal memproses penarikan." });
+    }
   } else {
     res.status(404).json({ error: "Motode permintaan tidak valid." });
   }

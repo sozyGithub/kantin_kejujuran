@@ -1,4 +1,5 @@
 import {
+  ActionIcon,
   Badge,
   Button,
   Card,
@@ -6,14 +7,23 @@ import {
   Grid,
   Image,
   Paper,
+  Select,
   TextInput,
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import type { GetServerSidePropsContext, NextPage } from "next";
 import { getSession, useSession } from "next-auth/react";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { Minus, Plus, Search, ShoppingCart, X } from "tabler-icons-react";
+import {
+  Filter,
+  Minus,
+  Plus,
+  Search,
+  ShoppingCart,
+  X,
+} from "tabler-icons-react";
 import DrawerProductDetail from "../components/DrawerProductDetail";
 import Navbar from "../components/Navbar";
 import { prisma } from "../lib/prisma";
@@ -21,9 +31,13 @@ import { prisma } from "../lib/prisma";
 const Home: NextPage = (props: any) => {
   const { data: session }: any = useSession();
 
+  const router = useRouter();
+
   const [value, setValue] = useState({
     cart: props.cartData,
     totalProduct: props.totalProduct,
+    search: "",
+    filter: "terbaru",
   });
 
   const handleFormatPrice = (price: string) => {
@@ -34,6 +48,14 @@ const Home: NextPage = (props: any) => {
       .match(/.{1,3}/g)
       ?.join(".");
     return segmentPrice?.split("").reverse().join("");
+  };
+  const handleFilterProduct = (filter: string) => {
+    router.push(`/?filter=${filter}`);
+  };
+
+  const handleSearchProduct = () => {
+    router.push(`/?search=${value.search}`);
+    setValue({ ...value, search: "" });
   };
 
   const handleAddCart = async (product: any) => {
@@ -135,13 +157,50 @@ const Home: NextPage = (props: any) => {
 
       <div className="">
         <div className="max-w-6xl mx-auto w-full space-y-4 p-3">
-          <TextInput
-            placeholder="Cari Produk"
-            icon={<Search size={15} />}
-            p="sm"
-          />
+          <div className="flex flex-row items-center">
+            <TextInput
+              placeholder="Cari Produk"
+              icon={<Search size={15} />}
+              p="sm"
+              className="flex-1"
+              value={value.search}
+              onChange={(e) => {
+                setValue({ ...value, search: e.currentTarget.value });
+              }}
+            />
+            <ActionIcon
+              variant="light"
+              onClick={handleSearchProduct}
+              disabled={value.search ? false : true}
+            >
+              <Search size={15} />
+            </ActionIcon>
+          </div>
           <Divider variant="dashed" />
-
+          {props.search && (
+            <div>
+              <p>
+                Hasil untuk: "<b>{props.search}</b>"
+              </p>
+            </div>
+          )}
+          <div className="w-32">
+            <Select
+              placeholder="Filter"
+              data={[
+                { value: "terbaru", label: "Terbaru" },
+                { value: "terlama", label: "Terlama" },
+                { value: "a-z", label: "A-Z" },
+                { value: "z-a", label: "Z-A" },
+              ]}
+              icon={<Filter size={15} />}
+              value={value.filter}
+              onChange={(e) => {
+                handleFilterProduct(e as string);
+                setValue({ ...value, filter: e as string });
+              }}
+            />
+          </div>
           <Grid>
             {props.products.map((product: any, i: number) => (
               <Grid.Col xs={6} sm={4} md={3} lg={3} key={i}>
@@ -150,7 +209,7 @@ const Home: NextPage = (props: any) => {
                     <Image src={product.image} height={180} />
                   </Card.Section>
                   <div className="overflow-hidden h-20 py-2">
-                    <p className="text-gray-600 font-semibold text-lg leading-tight">
+                    <p className="text-gray-600 font-semibold text-lg leading-tight uppercase">
                       {product.name}
                     </p>
                     <p className="text-xs text-gray-500 py-1">
@@ -224,17 +283,47 @@ const Home: NextPage = (props: any) => {
 
 export default Home;
 
-export async function getServerSideProps({ req }: GetServerSidePropsContext) {
+export async function getServerSideProps({
+  req,
+  query,
+}: GetServerSidePropsContext) {
   const session: any = await getSession({ req });
+
   let products: any;
+
+  // creating filter logic
+  let filterQuery: any = {};
+  if (query.filter === "terlama") {
+    filterQuery.createdAt = "asc";
+  } else if (query.filter === "a-z") {
+    filterQuery.name = "asc";
+  } else if (query.filter === "z-a") {
+    filterQuery.name = "desc";
+  } else {
+    filterQuery.createdAt = "desc";
+  }
+
   if (session) {
     products = await prisma.product.findMany({
+      orderBy: filterQuery,
       where: {
         NOT: {
           student: {
             student_id: session.user.student_id,
           },
         },
+        OR: [
+          {
+            name: {
+              contains: query.search ? (query.search as string) : "",
+            },
+          },
+          {
+            description: {
+              contains: query.search ? (query.search as string) : "",
+            },
+          },
+        ],
       },
       select: {
         id: true,
@@ -256,6 +345,21 @@ export async function getServerSideProps({ req }: GetServerSidePropsContext) {
     });
   } else {
     products = await prisma.product.findMany({
+      orderBy: filterQuery,
+      where: {
+        OR: [
+          {
+            name: {
+              contains: query.search ? (query.search as string) : "",
+            },
+          },
+          {
+            description: {
+              contains: query.search ? (query.search as string) : "",
+            },
+          },
+        ],
+      },
       select: {
         id: true,
         name: true,
@@ -312,13 +416,12 @@ export async function getServerSideProps({ req }: GetServerSidePropsContext) {
     });
   }
 
-  console.log(session);
-
   return {
     props: {
       products: products,
       cartData: cartData,
       totalProduct: totalProduct,
+      search: query.search || "",
     },
   };
 }

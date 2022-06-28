@@ -11,6 +11,7 @@ import {
   ReportMedical,
   ReportMoney,
   ShoppingCart,
+  Trash,
   X,
 } from "tabler-icons-react";
 import Navbar from "../../../components/Navbar";
@@ -31,6 +32,37 @@ const StudentCart: NextPage = (props: any) => {
       .match(/.{1,3}/g)
       ?.join(".");
     return segmentPrice?.split("").reverse().join("");
+  };
+  const handleRemoveAllCart = async () => {
+    const data: any = {
+      update: "many_quantity",
+      data: [],
+    };
+    props.cartItem
+      .filter((item: any) => item.quantity > 0)
+      .map((item: any) => {
+        data.data.push({
+          id: item.id,
+          quantity: 0,
+        });
+      });
+    try {
+      await fetch("/api/cartitem", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      router.push("/");
+    } catch {
+      showNotification({
+        title: "Kesalahan!",
+        message: "Silahkan coba beberapa saat lagi.",
+        color: "red",
+        icon: <X />,
+      });
+    }
   };
   const handleAddCart = async (productID: string, cartItemID: string) => {
     try {
@@ -149,13 +181,29 @@ const StudentCart: NextPage = (props: any) => {
               </div>
             </div>
           ))}
-        <div className="flex justify-end">
-          <Link href={`/student/${session?.user?.student_id}/checkout`}>
-            <Button variant="light" leftIcon={<ReportMoney size={15} />}>
-              Pembayaran
+        {props.cartItem.filter((item: any) => item.quantity > 0).length > 0 ? (
+          <div className="flex justify-between">
+            <Button
+              variant="light"
+              color="red"
+              leftIcon={<Trash size={15} />}
+              onClick={handleRemoveAllCart}
+            >
+              Kosongkan
             </Button>
-          </Link>
-        </div>
+            <Link href={`/student/${session?.user?.student_id}/checkout`}>
+              <Button variant="light" leftIcon={<ReportMoney size={15} />}>
+                Pembayaran
+              </Button>
+            </Link>
+          </div>
+        ) : (
+          <div className="flex flex-row justify-center">
+            <p className=" text-gray-600 font-semibold bg-gray-100 p-2 rounded-md border border-gray-300">
+              Tidak ada produk.
+            </p>
+          </div>
+        )}
       </div>
     </>
   );
