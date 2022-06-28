@@ -59,8 +59,8 @@ export default async function handler(
           student_id,
         },
         data: {
-          balance,
-          income,
+          balance: balance,
+          income: income,
         },
       });
       res
