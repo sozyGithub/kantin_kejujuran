@@ -69,6 +69,28 @@ export default async function handler(
     } catch {
       res.status(400).json({ error: "Gagal memproses penarikan." });
     }
+  } else if (
+    req.method === "PUT" &&
+    session &&
+    req.body.update === "many_income"
+  ) {
+    try {
+      await prisma.$transaction(
+        Object.keys(req.body.data).map((id: any) =>
+          prisma.student.update({
+            where: {
+              id: id,
+            },
+            data: {
+              income: req.body.data[id],
+            },
+          })
+        )
+      );
+      res.status(200).json({ success: "Sukses memperbarui income." });
+    } catch {
+      res.status(400).json({ error: "Gagal memperbarui income." });
+    }
   } else {
     res.status(404).json({ error: "Motode permintaan tidak valid." });
   }

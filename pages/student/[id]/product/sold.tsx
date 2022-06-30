@@ -26,39 +26,60 @@ const StudentSoldProduct: NextPage = (props: any) => {
     return segmentPrice?.split("").reverse().join("");
   };
   const handleHookIncome = async () => {
-    const data = {
+    const dataStudent = {
       student_id: session?.user?.student_id,
       balance: props.balance + value.hook,
       income: props.income - value.hook,
       update: "balance_income",
     };
+    const dataCanteen = {
+      id: session?.user?.canteen_id,
+      balance: props.canteenBalance - value.hook,
+    };
     setValue({ ...value, processing: true });
     if (value.hook <= props.income) {
       try {
-        const res = await fetch("/api/student", {
+        const resStudent = await fetch("/api/student", {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(data),
+          body: JSON.stringify(dataStudent),
         }).then((r) => r.json());
-        if (res.error) {
+        if (resStudent.error) {
           showNotification({
             title: "Gagal!",
-            message: res.error,
+            message: resStudent.error,
             color: "red",
             icon: <X />,
             autoClose: 10000,
           });
-        } else {
-          router.push(`/student/${session?.user?.student_id}/product/sold`);
-          showNotification({
-            title: "Sukses!",
-            message: res.success,
-            color: "green",
-            icon: <Check />,
-          });
+          return;
         }
+        const resCanteen = await fetch("/api/canteen", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(dataCanteen),
+        }).then((r) => r.json());
+        if (resCanteen.error) {
+          showNotification({
+            title: "Gagal!",
+            message: resStudent.error,
+            color: "red",
+            icon: <X />,
+            autoClose: 10000,
+          });
+          return;
+        }
+        router.push(`/student/${session?.user?.student_id}/product/sold`);
+        showNotification({
+          title: "Sukses!",
+          message: "Pendapatan berhasil dipindahkan ke saldo Anda.",
+          color: "green",
+          icon: <Check />,
+        });
       } catch {
         showNotification({
           title: "Penarikan Saldo Gagal!",
@@ -72,7 +93,7 @@ const StudentSoldProduct: NextPage = (props: any) => {
       showNotification({
         title: "Penarikan Saldo Gagal",
         message:
-          "Saldo yang Anda tarik melebihi pendapatan Anda. Penarikan tidak dapat diproses. Saldo Anda saat ini dikurangi Rp100",
+          "Saldo yang Anda tarik melebihi pendapatan Anda. Penarikan tidak dapat diproses.",
         color: "red",
         icon: <X />,
       });
@@ -178,6 +199,16 @@ export async function getServerSideProps({
       notFound: true,
     };
 
+  // fetch canteen balance
+  const canteenBalance = await prisma.canteen.findUnique({
+    where: {
+      id: session?.user?.canteen_id,
+    },
+    select: {
+      balance: true,
+    },
+  });
+
   // fetch all sold product for current student
   const soldProducts = await prisma.soldProduct.findMany({
     orderBy: {
@@ -230,6 +261,7 @@ export async function getServerSideProps({
       soldProducts,
       income: incomeAndBalance?.income,
       balance: incomeAndBalance?.balance,
+      canteenBalance: canteenBalance?.balance,
     },
   };
 }

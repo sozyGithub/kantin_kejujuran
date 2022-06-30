@@ -18,7 +18,7 @@ import Navbar from "../../../components/Navbar";
 import { prisma } from "../../../lib/prisma";
 
 const StudentCart: NextPage = (props: any) => {
-  const { data: session }: any = useSession();
+  const { data: session } = useSession();
   const router = useRouter();
   const [value, setValue] = useState({
     cart: props.cartPerItemQuantity,
@@ -52,11 +52,21 @@ const StudentCart: NextPage = (props: any) => {
         delete: "many",
         data: [],
       };
+      let dataStudentIncome: any = {
+        update: "many_income",
+        data: {},
+      };
       let dataCartItemObject: any = {};
       // construct data for allCartItem
       props.allCartItem.map((item: any) => {
         dataCartItemObject[item.id] = item.quantity;
       });
+      props.cartItem
+        .filter((item: any) => item.quantity > 0)
+        .map((item: any) => {
+          dataStudentIncome.data[item.product.studentId] =
+            item.product.student.income;
+        });
       props.cartItem
         .filter((item: any) => item.quantity > 0)
         .map((item: any) => {
@@ -85,6 +95,8 @@ const StudentCart: NextPage = (props: any) => {
           dataCartItemRemove.data.push({
             id: item.id,
           });
+          dataStudentIncome.data[item.product.studentId] +=
+            item.quantity * item.product.price;
         });
 
       const dataCanteen = {
@@ -121,13 +133,21 @@ const StudentCart: NextPage = (props: any) => {
           },
           body: JSON.stringify(dataCanteen),
         });
-        // change student balance
+        // change student balance (who bought the product)
         await fetch("/api/student", {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(dataStudent),
+        });
+        // change student income (who sold the product)
+        await fetch("/api/student", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(dataStudentIncome),
         });
         // change every product quantity on the cart
         await fetch("/api/product", {
@@ -153,8 +173,16 @@ const StudentCart: NextPage = (props: any) => {
           },
           body: JSON.stringify(dataCartItemRemove),
         });
-      } catch {}
-      setValue({ ...value, loadingConfirm: false });
+        router.push(`/`);
+      } catch {
+        showNotification({
+          title: "Pembayaran Gagal!",
+          message: "Silakan coba beberapa saat lagi.",
+          icon: <X />,
+          color: "red",
+        });
+        setValue({ ...value, loadingConfirm: false });
+      }
     } else if (
       value.inputTotalPrice < +props.totalShopping.split(".").join("")
     ) {
@@ -179,8 +207,15 @@ const StudentCart: NextPage = (props: any) => {
           icon: <X />,
           color: "red",
         });
-        setValue({ ...value, loadingConfirm: false });
-      } catch {}
+      } catch {
+        showNotification({
+          title: "Transaksi Gagal!",
+          message: "Silakan coba beberapa saat lagi.",
+          icon: <X />,
+          color: "red",
+        });
+      }
+      setValue({ ...value, loadingConfirm: false });
     }
   };
   const handleAddCart = async (productID: string, cartItemID: string) => {
@@ -373,6 +408,12 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
               image: true,
               price: true,
               quantity: true,
+              studentId: true,
+              student: {
+                select: {
+                  income: true,
+                },
+              },
             },
           },
           quantity: true,

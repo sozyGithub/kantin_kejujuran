@@ -12,7 +12,7 @@ import {
   ThemeIcon,
   Avatar,
 } from "@mantine/core";
-import { Box, Home, List, ReportMoney } from "tabler-icons-react";
+import { Archive, Box, Home, List, ReportMoney } from "tabler-icons-react";
 import NavLink from "./NavLink";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
@@ -75,6 +75,15 @@ export default function SidebarStudentDashboard(props: any) {
                     <ReportMoney />
                   </ThemeIcon>
                   <p className="flex-1 font-semibold">Terjual</p>
+                </NavLink>
+                <NavLink
+                  href={`/student/${session?.user?.student_id}/product/bought`}
+                  className="flex flex-row space-x-2 p-2 hover:bg-sky-100 rounded-md cursor-pointer"
+                >
+                  <ThemeIcon variant="light">
+                    <Archive />
+                  </ThemeIcon>
+                  <p className="flex-1 font-semibold">Dibeli</p>
                 </NavLink>
               </div>
             </div>
