@@ -1,23 +1,41 @@
-# Next.js + Tailwind CSS Example
+# Kantin Kejujuran
 
-This example shows how to use [Tailwind CSS](https://tailwindcss.com/) [(v3.0)](https://tailwindcss.com/blog/tailwindcss-v3) with Next.js. It follows the steps outlined in the official [Tailwind docs](https://tailwindcss.com/docs/guides/nextjs).
+Web project prasyarat seleksi Academy Software Engineering Compfest 2022.
 
-## Deploy your own
+## Arsitektur
 
-Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=next-example) or preview live with [StackBlitz](https://stackblitz.com/github/vercel/next.js/tree/canary/examples/with-tailwindcss)
+#### Main Framework
+- Next.js 
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/git/external?repository-url=https://github.com/vercel/next.js/tree/canary/examples/with-tailwindcss&project-name=with-tailwindcss&repository-name=with-tailwindcss)
+Next.js digunakan sebagai framework utama aplikasi web ini, mulai dari API hingga frontend.
 
-## How to use
+#### Databases
+- Prisma (sebagai ORM)
+- MySQL database dari PlanetScale
 
-Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [npm](https://docs.npmjs.com/cli/init), [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/), or [pnpm](https://pnpm.io) to bootstrap the example:
+#### Authentication
+- NextAuth.js (mengelola session)
+- bcryptjs (hashing password)
 
-```bash
-npx create-next-app --example with-tailwindcss with-tailwindcss-app
-# or
-yarn create next-app --example with-tailwindcss with-tailwindcss-app
-# or
-pnpm create next-app --example with-tailwindcss with-tailwindcss-app
-```
+#### Styling
+- Tailwindcss
+- Mantine
+- Tabler Icons React (Icons)
 
-Deploy it to the cloud with [Vercel](https://vercel.com/new?utm_source=github&utm_medium=readme&utm_campaign=next-example) ([Documentation](https://nextjs.org/docs/deployment)).
+#### Deployment
+- Vercel
+
+## Fitur
+- **Panel Siswa**
+  Panel siswa adalah dashboard bagi siswa yang telah teregistrasi untuk menambahkan produk yang ingin dijual, melihat riwayat penjualan dan pembelian, mengecek informasi saldo (baik kantin maupun siswa), serta melakukan penarikan pendapatan hasil penjualan dari saldo kantin.
+- **Keranjang Belanja**
+  Seperti namanya, keranjang belanja digunakan sebagai wadah menampung produk-produk yang ingin dibeli siswa terkait sebelum melakukan pembayaran.
+- **Pencarian dan Pengurutan Produk**
+  Terdapat fitur pencarian (judul dan deskripsi produk) serta pengurutan berdasarkan waktu (terbaru dan terlama) dan berdasarkan abjad (A-Z dan Z-A).
+- **Autentikasi**
+  Siswa yang ingin melakukan penjualan maupun pembelian produk, tetapi belum terdaftar dapat mendaftar terlebih dahulu dengan menggunakan menu `registrasi`, serta bagi siswa yang sudah pernah mendaftar dapat langsung masuk ke dalam sistem dengan menu `masuk` yang tersedia. Siswa lain maupun orang lain yang belum terdaftar hanya dapat **melihat** produk yang dijual di Kantin Kejujuran.
+
+
+## Tautan website
+
+[https://kantin-kejujuran.vercel.app](https://kantin-kejujuran.vercel.app)

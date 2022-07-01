@@ -1,23 +1,48 @@
-import {
-  Alert,
-  Button,
-  Divider,
-  Image,
-  LoadingOverlay,
-  NumberInput,
-  Paper,
-} from "@mantine/core";
+import { Alert, Divider, LoadingOverlay, NumberInput } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { AlertCircle, Minus, Plus, ShoppingCart, X } from "tabler-icons-react";
+import { AlertCircle, X } from "tabler-icons-react";
 import ModalConfirmPayment from "../../../components/ModalConfirmPayment";
 import Navbar from "../../../components/Navbar";
 import { prisma } from "../../../lib/prisma";
 
-const StudentCart: NextPage = (props: any) => {
+type CartItem = {
+  id: string;
+  product: {
+    id: string;
+    name: string;
+    image: string;
+    price: number;
+    quantity: number;
+    studentId: string;
+    student: {
+      income: number;
+    };
+  };
+  quantity: number;
+};
+
+type AllCartItem = {
+  id: string;
+  quantity: number;
+};
+
+interface StudentCartProps {
+  cartItem: Array<CartItem>;
+  cartItemQuantity: number;
+  cartPerItemQuantity: any;
+  totalShopping: string;
+  studentBalance: number;
+  studentId: string;
+  canteenId: string;
+  canteenBalance: number;
+  allCartItem: Array<AllCartItem>;
+}
+
+const StudentCart: NextPage<StudentCartProps> = (props) => {
   const { data: session } = useSession();
   const router = useRouter();
   const [value, setValue] = useState({
@@ -26,6 +51,8 @@ const StudentCart: NextPage = (props: any) => {
     inputTotalPrice: -1,
     loadingConfirm: false,
   });
+
+  // formating -> Rp
   const handleFormatPrice = (price: string) => {
     let segmentPrice = price
       .split("")
@@ -35,6 +62,7 @@ const StudentCart: NextPage = (props: any) => {
       ?.join(".");
     return segmentPrice?.split("").reverse().join("");
   };
+
   const handleConfirmPayment = async () => {
     setValue({ ...value, loadingConfirm: true });
     if (value.inputTotalPrice === +props.totalShopping.split(".").join("")) {
@@ -58,18 +86,18 @@ const StudentCart: NextPage = (props: any) => {
       };
       let dataCartItemObject: any = {};
       // construct data for allCartItem
-      props.allCartItem.map((item: any) => {
+      props.allCartItem.map((item) => {
         dataCartItemObject[item.id] = item.quantity;
       });
       props.cartItem
-        .filter((item: any) => item.quantity > 0)
-        .map((item: any) => {
+        .filter((item) => item.quantity > 0)
+        .map((item) => {
           dataStudentIncome.data[item.product.studentId] =
             item.product.student.income;
         });
       props.cartItem
-        .filter((item: any) => item.quantity > 0)
-        .map((item: any) => {
+        .filter((item) => item.quantity > 0)
+        .map((item) => {
           dataBought.push({
             studentId: props.studentId,
             productId: item.product.id,
@@ -191,7 +219,7 @@ const StudentCart: NextPage = (props: any) => {
           balance:
             props.studentBalance - 100 >= 0 ? props.studentBalance - 100 : 0,
           update: "balance",
-          student_id: session?.user?.student_id,
+          student_id: session?.user.student_id,
         };
         const res = await fetch("/api/student", {
           method: "PUT",
@@ -279,8 +307,8 @@ const StudentCart: NextPage = (props: any) => {
         <LoadingOverlay visible={value.loadingConfirm} />
         <h2 className="text-xl font-bold text-gray-700 py-4">Pembayaran</h2>
         {props.cartItem
-          .filter((item: any) => item.quantity > 0 && item.product.quantity > 0)
-          .map((item: any) => (
+          .filter((item) => item.quantity > 0 && item.product.quantity > 0)
+          .map((item) => (
             <div className="bg-white rounded-xl shadow-md overflow-hidden">
               <div className="flex items-center">
                 <div className="shrink-0">
