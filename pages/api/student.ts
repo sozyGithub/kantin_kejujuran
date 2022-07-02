@@ -19,7 +19,7 @@ export default async function handler(
           student_id,
           password,
           name,
-          balance: 0,
+          balance: 100000,
           canteenId: process.env.CANTEEN_ID,
         },
       });

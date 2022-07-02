@@ -27,7 +27,7 @@ model Student {
   student_id    String?         @unique
   password      String?
   name          String?
-  balance       Int?
+  balance       Int?            @default(100000)
   income        Int?            @default(0)
   canteen       Canteen?        @relation(fields: [canteenId], references: [id])
   canteenId     String?

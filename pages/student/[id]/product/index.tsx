@@ -130,6 +130,13 @@ const StudentProduct: NextPage = (props: any) => {
               </Grid.Col>
             ))}
           </Grid>
+          {props.products.length === 0 && (
+            <div className="max-w-max mx-auto bg-white shadow border border-gray-300 rounded-md p-2 my-5">
+              <p className="text-center text-gray-600 font-semibold">
+                Tidak ada produk.
+              </p>
+            </div>
+          )}
         </div>
       </SidebarStudentDashboard>
     </>

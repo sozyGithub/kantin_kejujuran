@@ -1,4 +1,4 @@
-import { Button, Divider, Image, Paper } from "@mantine/core";
+import { Button, Divider, Image, LoadingOverlay, Paper } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { useSession } from "next-auth/react";
@@ -23,6 +23,7 @@ const StudentCart: NextPage = (props: any) => {
   const [value, setValue] = useState({
     cart: props.cartPerItemQuantity,
     totalProduct: props.cartItemQuantity,
+    loading: false,
   });
   const handleFormatPrice = (price: string) => {
     let segmentPrice = price
@@ -34,6 +35,7 @@ const StudentCart: NextPage = (props: any) => {
     return segmentPrice?.split("").reverse().join("");
   };
   const handleRemoveAllCart = async () => {
+    setValue({ ...value, loading: true });
     const data: any = {
       update: "many_quantity",
       data: [],
@@ -63,8 +65,10 @@ const StudentCart: NextPage = (props: any) => {
         icon: <X />,
       });
     }
+    setValue({ ...value, loading: false });
   };
   const handleAddCart = async (productID: string, cartItemID: string) => {
+    setValue({ ...value, loading: true });
     try {
       const dataUpdate = {
         id: cartItemID,
@@ -90,8 +94,10 @@ const StudentCart: NextPage = (props: any) => {
         icon: <X />,
       });
     }
+    setValue({ ...value, loading: false });
   };
   const handleRemoveCart = async (productID: string, cartItemID: string) => {
+    setValue({ ...value, loading: true });
     try {
       const dataUpdate = {
         id: cartItemID,
@@ -119,11 +125,13 @@ const StudentCart: NextPage = (props: any) => {
         icon: <X />,
       });
     }
+    setValue({ ...value, loading: false });
   };
   return (
     <>
       <Navbar quantity={value.totalProduct} />
       <div className="max-w-6xl mx-auto w-full p-2 space-y-2">
+        <LoadingOverlay visible={value.loading} />
         <h2 className="text-xl font-bold text-gray-700 py-4">Keranjang Saya</h2>
         {props.cartItem
           .filter((item: any) => item.quantity > 0 && item.product.quantity > 0)

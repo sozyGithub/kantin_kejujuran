@@ -6,6 +6,7 @@ import {
   Divider,
   Grid,
   Image,
+  LoadingOverlay,
   Paper,
   Select,
   TextInput,
@@ -38,6 +39,7 @@ const Home: NextPage = (props: any) => {
     totalProduct: props.totalProduct,
     search: "",
     filter: "terbaru",
+    loading: false,
   });
 
   const handleFormatPrice = (price: string) => {
@@ -59,6 +61,7 @@ const Home: NextPage = (props: any) => {
   };
 
   const handleAddCart = async (product: any) => {
+    setValue({ ...value, loading: true });
     let isCartItemExist = false;
     let cartItemID;
     product.CartItem.map((item: any) => {
@@ -101,8 +104,10 @@ const Home: NextPage = (props: any) => {
         icon: <X />,
       });
     }
+    setValue({ ...value, loading: false });
   };
   const handleRemoveCart = async (product: any) => {
+    setValue({ ...value, loading: true });
     let isCartItemExist = false;
     let cartItemID;
     product.CartItem.map((item: any) => {
@@ -146,6 +151,7 @@ const Home: NextPage = (props: any) => {
         icon: <X />,
       });
     }
+    setValue({ ...value, loading: false });
   };
   return (
     <>
@@ -156,6 +162,7 @@ const Home: NextPage = (props: any) => {
       <Navbar quantity={value.totalProduct} />
 
       <div className="">
+        <LoadingOverlay visible={value.loading} />
         <div className="max-w-6xl mx-auto w-full space-y-4 p-3">
           <div className="flex flex-row items-center">
             <TextInput
@@ -275,6 +282,13 @@ const Home: NextPage = (props: any) => {
               </Grid.Col>
             ))}
           </Grid>
+          {props.products.length === 0 && (
+            <div className="max-w-max mx-auto bg-white shadow border border-gray-300 rounded-md p-2">
+              <p className="text-center text-gray-600 font-semibold">
+                Tidak ada produk.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </>

@@ -6,6 +6,7 @@ import {
   PasswordInput,
   Divider,
   TextInput,
+  LoadingOverlay,
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
@@ -16,6 +17,7 @@ import { Check, Home, X } from "tabler-icons-react";
 import { z } from "zod";
 import IDInfoModalComp from "../../components/IDInfoModal";
 import bcrypt from "bcryptjs";
+import { useState } from "react";
 
 const schema = z.object({
   student_id: z
@@ -28,6 +30,10 @@ const schema = z.object({
 const Register: NextPage = () => {
   const router = useRouter();
 
+  const [value, setValue] = useState({
+    loading: false,
+  });
+
   const form = useForm({
     schema: zodResolver(schema),
     initialValues: {
@@ -39,6 +45,7 @@ const Register: NextPage = () => {
   });
 
   const handleRegister = async (values: any) => {
+    setValue({ ...value, loading: true });
     // validating password and confirm password
     if (values.password != values.confirm_password) {
       showNotification({
@@ -48,6 +55,7 @@ const Register: NextPage = () => {
         color: "red",
         autoClose: 10000,
       });
+      setValue({ ...value, loading: false });
       return;
     }
 
@@ -66,6 +74,7 @@ const Register: NextPage = () => {
         color: "red",
         autoClose: 10000,
       });
+      setValue({ ...value, loading: false });
       return;
     }
 
@@ -105,6 +114,7 @@ const Register: NextPage = () => {
               icon: <X />,
               color: "red",
             });
+            setValue({ ...value, loading: false });
           }
         } catch (error) {
           showNotification({
@@ -113,6 +123,7 @@ const Register: NextPage = () => {
             icon: <X />,
             color: "red",
           });
+          setValue({ ...value, loading: false });
         }
       });
     });
@@ -121,6 +132,7 @@ const Register: NextPage = () => {
   return (
     <>
       <div className="flex items-center flex-col justify-center h-screen p-2 space-y-2">
+        <LoadingOverlay visible={value.loading} />
         <div className="flex flex-row space-x-2">
           <div className="w-content shadow rounded-full cursor-pointer">
             <Link href="/">

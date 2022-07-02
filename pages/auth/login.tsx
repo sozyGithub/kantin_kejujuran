@@ -5,6 +5,7 @@ import {
   PasswordInput,
   Divider,
   TextInput,
+  LoadingOverlay,
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
@@ -12,6 +13,7 @@ import { NextPage } from "next";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useState } from "react";
 import { Home, X } from "tabler-icons-react";
 import { z } from "zod";
 
@@ -23,6 +25,10 @@ const schema = z.object({
 const Login: NextPage = () => {
   const router = useRouter();
 
+  const [value, setValue] = useState({
+    loading: false,
+  });
+
   const form = useForm({
     schema: zodResolver(schema),
     initialValues: {
@@ -32,6 +38,7 @@ const Login: NextPage = () => {
   });
 
   const handleLogin = async (values: any) => {
+    setValue({ ...value, loading: true });
     const res = await signIn("credentials", {
       student_id: values.student_id,
       password: values.password,
@@ -44,7 +51,7 @@ const Login: NextPage = () => {
         icon: <X />,
         color: "red",
       });
-
+      setValue({ ...value, loading: false });
       return;
     }
 
@@ -55,6 +62,7 @@ const Login: NextPage = () => {
   return (
     <>
       <div className="flex items-center flex-col justify-center h-screen p-2 space-y-2">
+        <LoadingOverlay visible={value.loading} />
         <div className="w-content shadow rounded-full cursor-pointer">
           <Link href="/">
             <Avatar radius="xl">

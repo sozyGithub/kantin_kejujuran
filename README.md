@@ -35,6 +35,12 @@ Next.js digunakan sebagai framework utama aplikasi web ini, mulai dari API hingg
 - **Autentikasi**
   Siswa yang ingin melakukan penjualan maupun pembelian produk, tetapi belum terdaftar dapat mendaftar terlebih dahulu dengan menggunakan menu `registrasi`, serta bagi siswa yang sudah pernah mendaftar dapat langsung masuk ke dalam sistem dengan menu `masuk` yang tersedia. Siswa lain maupun orang lain yang belum terdaftar hanya dapat **melihat** produk yang dijual di Kantin Kejujuran.
 
+## List Siswa Telah Terdaftar
+| ID | Nama | Password |
+| -- | -- | -- |
+| 00101 | user1 | pass_user1 |
+| 00202 | user2 | pass_user2 |
+| 00303 | user3 | pass_user3 |
 
 ## Tautan website
 
