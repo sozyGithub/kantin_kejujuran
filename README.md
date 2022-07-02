@@ -1,6 +1,6 @@
 # Kantin Kejujuran
 
-Web project prasyarat seleksi Academy Software Engineering Compfest 2022.
+Web project prasyarat seleksi Software Engineering Academy Compfest 2022.
 
 ## Arsitektur
 
@@ -12,6 +12,7 @@ Next.js digunakan sebagai framework utama aplikasi web ini, mulai dari API hingg
 #### Databases
 - Prisma (sebagai ORM)
 - MySQL database dari PlanetScale
+- Cloudinary (menyimpan gambar)
 
 #### Authentication
 - NextAuth.js (mengelola session)
@@ -28,7 +29,7 @@ Next.js digunakan sebagai framework utama aplikasi web ini, mulai dari API hingg
 ## Fitur
 - **Panel Siswa**
 
-  Panel siswa adalah dashboard bagi siswa yang telah teregistrasi untuk menambahkan produk yang ingin dijual, melihat riwayat penjualan dan pembelian, mengecek informasi saldo (baik kantin maupun siswa), serta melakukan penarikan pendapatan hasil penjualan dari saldo kantin.
+  Panel siswa adalah dashboard bagi siswa yang telah terdaftar untuk menambahkan produk yang ingin dijual, melihat riwayat penjualan dan pembelian, mengecek informasi saldo (baik kantin maupun siswa), serta melakukan penarikan pendapatan hasil penjualan dari saldo kantin.
   
 - **Keranjang Belanja**
 
