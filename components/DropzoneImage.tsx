@@ -66,7 +66,7 @@ const DropzoneImage = (props: any) => {
     formData.append("file", files[0]);
     formData.append("upload_preset", "my-uploads");
     const dataRes = await fetch(
-      "https://api.cloudinary.com/v1_1/drbeblyl0/upload",
+      process.env.NEXT_PUBLIC_CLOUDINARY_URL as string,
       {
         method: "POST",
         body: formData,
