@@ -12,6 +12,7 @@ Next.js digunakan sebagai framework utama aplikasi web ini, mulai dari API hingg
 #### Databases
 - Prisma (sebagai ORM)
 - MySQL database dari PlanetScale
+- Cloudinary (menyimpan gambar)
 
 #### Authentication
 - NextAuth.js (mengelola session)
