@@ -50,6 +50,53 @@ Next.js digunakan sebagai framework utama aplikasi web ini, mulai dari API hingg
 | 00202 | user2 | pass_user2 |
 | 00303 | user3 | pass_user3 |
 
+## Local Setup
+
+1. Clone repositori ini
+2. Lakukan instalasi package dengan `npm i` atau `yarn`
+3. Tambahkan file `.env` dan `.env.local` pada root direktori.
+4. Pada file `.env` tambahkan,
+   ```text
+   DATABASE_URL=file./dev.db
+   ```
+5. Pada file `prisma/schema.prisma` ubah bagian,
+   ```
+   ...
+   generator client {
+     provider        = "prisma-client-js"
+     binaryTargets   = "native"
+   }
+
+   datasource db {
+     provider        = "sqlite"
+     url             = env("DATABASE_URL")
+   }
+   ...
+   ```
+6. Lalu pada terminal jalankan,
+   ```bash
+   npx prisma db push
+   npx prisma generate
+   npx prisma studio
+   ```
+7. Tambahkan satu item pada tabel canteen melalui prisma studio yang terbuka di browser.
+8. Pada file `.env.local` tambahkan,
+   ```text
+   NEXTAUTH_URL=http://localhost:3000/api/auth
+   NEXTAUTH_SECRET=<Dapat menggunakan UUID>
+   BASE_URL=http://localhost:3000
+   CANTEEN_ID=<Id pada tabel canteen, baris pertama di prisma studio>
+   NEXT_PUBLIC_CLOUDINARY_URL=<Diperoleh dengan mendaftar akun Cloudinary, dengan format https://api.cloudinary.com/v1_1/<cloud_name>/upload>
+   ```
+9. Pada file `components/DropzoneImage.tsx` ubah,
+   ```ts
+   const handleUploadImage = async (files: File[]) => {
+      ...
+      formData.append("upload_preset", <cloudinary_upload_preset_mode_unsigned>);
+      ...
+    };
+   ```
+
 ## Tautan website
 
 [https://kantin-kejujuran.vercel.app](https://kantin-kejujuran.vercel.app)
